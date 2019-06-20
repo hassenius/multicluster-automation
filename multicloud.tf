@@ -150,82 +150,82 @@ module "azurecloud" {
 }
 
 
-# module "awscloud" {
-#   source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git"
-#
-#   providers = {
-#     "aws" = "aws.awsclusters"
-#   }
-#
-#   aws_region = "eu-west-1"
-#
-#   ami = "ami-0cbf7a0c36bde57c9"
-#
-#   bastion = {
-#     nodes = "1"
-#     type      = "t2.micro"
-#     ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
-#     disk      = "10" //GB
-#   }
-#
-#   master = {
-#     nodes = "1"
-#     type      = "m4.2xlarge"
-#     ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
-#     disk      = "300" //GB
-#     docker_vol = "100" // GB
-#     ebs_optimized = true    // not all instance types support EBS optimized
-#   }
-#
-#   proxy = {
-#     nodes     = "1"
-#     type      = "m4.xlarge"
-#     ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
-#     disk      = "150" //GB
-#     docker_vol = "100" // GB
-#     ebs_optimized = true    // not all instance types support EBS optimized
-#   }
-#
-#   key_name = "hk_key"
-#
-#   icp_inception_image = "ibmcom/icp-inception-amd64:3.1.2"
-#
-#   icp_network_cidr = "172.23.0.0/17"
-#
-#   icp_service_network_cidr = "172.23.128.0/17"
-#
-# }
+module "awscloud" {
+  source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git?ref=v1.1"
+
+  providers = {
+    "aws" = "aws.awsclusters"
+  }
+
+  aws_region = "eu-west-1"
+
+  ami = "ami-0cbf7a0c36bde57c9"
+
+  bastion = {
+    nodes = "1"
+    type      = "t2.micro"
+    ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
+    disk      = "10" //GB
+  }
+
+  master = {
+    nodes = "1"
+    type      = "m4.2xlarge"
+    ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
+    disk      = "300" //GB
+    docker_vol = "100" // GB
+    ebs_optimized = true    // not all instance types support EBS optimized
+  }
+
+  proxy = {
+    nodes     = "1"
+    type      = "m4.xlarge"
+    ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
+    disk      = "150" //GB
+    docker_vol = "100" // GB
+    ebs_optimized = true    // not all instance types support EBS optimized
+  }
+
+  key_name = "hk_key"
+
+  icp_inception_image = "ibmcom/icp-inception-amd64:3.2.0"
+
+  icp_network_cidr = "172.23.0.0/17"
+
+  icp_service_network_cidr = "172.23.128.0/17"
+
+}
 
 
 ## IBM Cloud Environment
-output "ibmcloud.icp_console_host" {
+output "ibmcloud_icp_console_host" {
   value = "${module.ibmcloud.icp_console_host}"
 }
 
-output "ibmcloud.icp_proxy_host" {
+output "ibmcloud_icp_proxy_host" {
   value = "${module.ibmcloud.icp_proxy_host}"
 }
 
-output "ibmcloud.icp_console_url" {
+output "ibmcloud_icp_console_url" {
   value = "${module.ibmcloud.icp_console_url}"
 }
 
-output "ibmcloud.icp_registry_url" {
+output "ibmcloud_icp_registry_url" {
   value = "${module.ibmcloud.icp_registry_url}"
 }
 
-output "ibmcloud.kubernetes_api_url" {
+output "ibmcloud_kubernetes_api_url" {
   value = "${module.ibmcloud.kubernetes_api_url}"
 }
 
-output "ibmcloud.icp_admin_username" {
+output "ibmcloud_icp_admin_username" {
   value = "admin"
 }
 
 ## We will not output the passwords since
 ## we do our builds in public
 ##
-# output "ibmcloud.icp_admin_password" {
+# output "ibmcloud_icp_admin_password" {
 #   value = "${module.ibmcloud.icp_admin_password}"
 # }
 
@@ -233,30 +233,30 @@ output "ibmcloud.icp_admin_username" {
 ## We will not output the passwords since
 ## we do our builds in public
 ##
-# output "azurecloud.icp_admin_password" {
+# output "azurecloud_icp_admin_password" {
 #   value = "${module.azurecloud.icp_admin_password}"
 # }
 
-output "azurecloud.resource_group" {
+output "azurecloud_resource_group" {
   value = "${module.azurecloud.resource_group}"
 }
 
-output "azurecloud.icp_console_url" {
+output "azurecloud_icp_console_url" {
   value = "${module.azurecloud.icp_console_url}"
 }
 
-output "azurecloud.icp_console_server" {
+output "azurecloud_icp_console_server" {
   value = "${module.azurecloud.icp_console_server}"
 }
 
-output "azurecloud.icp_proxy" {
+output "azurecloud_icp_proxy" {
   value = "${module.azurecloud.icp_proxy}"
 }
 
-output "azurecloud.kubernetes_api_url" {
+output "azurecloud_kubernetes_api_url" {
   value = "${module.azurecloud.kubernetes_api_url}"
 }
 
-output "azurecloud.icp_admin_username" {
+output "azurecloud_icp_admin_username" {
   value = "admin"
 }
