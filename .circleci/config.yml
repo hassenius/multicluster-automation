@@ -69,7 +69,7 @@ jobs:
                 }
               }
             EOF
-      - run: echo terraform init
+      - run: terraform init
       - run:
           name: terraform plan
           command: |
@@ -111,7 +111,7 @@ jobs:
                 }
               }
             EOF
-      - run: echo terraform init
+      - run: terraform init
       - run:
           name: terraform apply
           command: terraform apply "/tmp/workspace/mybuild" -no-color
