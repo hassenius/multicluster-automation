@@ -20,8 +20,9 @@
 #
 version: 2.1
 executors:
-  docker:
-    - image: hashicorp/terraform:0.11.14
+  terraform:
+    docker:
+      - image: hashicorp/terraform:0.11.14
 commands:
   # CircleCI generally only triggers builds on commits to the main repository,
   # so PRs coming from branches of the main repo simply reference builds for existing commits
@@ -44,6 +45,7 @@ commands:
 
 jobs:
   plan:
+    executor: terraform
     environment:
       - TF_VAR_aws_region: eu-west-1
       - tfstatebucket: circlecitfstate
@@ -92,6 +94,7 @@ jobs:
             - mybuild
 
   build:
+    executor: terraform
     steps:
       - checkout
       - attach_workspace:
