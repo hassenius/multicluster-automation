@@ -51,7 +51,7 @@ commands:
             wget https://github.com/IBM-Cloud/terraform-provider-ibm/releases/download/v0.17.1/linux_amd64.zip
             mkdir -p  ~/terraform.d/plugins
             unzip linux_amd64.zip -d  ~/terraform.d/plugins
-            echo \<<EOF >~/.terraformrc
+            cat \<<EOF >~/.terraformrc
               providers {
                 ibm = "/root/terraform.d/plugins/terraform-provider-ibm_v0.17.1"
               }
