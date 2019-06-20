@@ -1,0 +1,126 @@
+#### CircleCI configuration file to support gitops workflow
+# Initially this is structured for a single environment, but
+# can be extended to support integration/preprod workflow
+##
+# To successfully complete end-to-end tests including deployment
+# some variables need to be defined in the CircleCI environment
+#
+# BACKEND_SA     - The backend storage account to use for the terraform state backend
+# BACKEND_CN     - The container name to use for the terraform state backend
+# BACKEND_SF     - Name of the statefile in the container
+# ARM_ACCESS_KEY - Access key to access the terraform state backend
+# ARM_CLIENT_ID  - Service Principal for deploying resources
+# ARM_TENANT_ID  - TenantID to provision resources in
+# ARM_CLIENT_SECRET   - Secret for the Service Principal
+# ARM_SUBSCRIPTION_ID - Subscriptinon to provision resources in
+# TF_VAR_aadClientId  - Service Principal for Kubernetes Azure Cloud Provider
+# TF_VAR_aadClientSecret - Service Principal for Kubernetes Azure Cloud Provider
+# TF_VAR_ssh_public_key  - The public key corresponding to the private key held by CircleCI
+#                           More info here: https://circleci.com/docs/2.0/add-ssh-key/
+#
+version: 2.1
+executors:
+  docker:
+    - image: hashicorp/terraform:0.11.14
+commands:
+  # CircleCI generally only triggers builds on commits to the main repository,
+  # so PRs coming from branches of the main repo simply reference builds for existing commits
+  # (CIRCLE_BRANCH=branchname and CIRCLE_PR_NUMBER is unset);
+  # The only time PRs will trigger a build is when the PR is referencing a fork
+  # (CIRCLE_BRANCH=pull/XXX and CIRCLE_PR_NUMBER=XXX).
+  early_return_for_forked_pull_requests:
+    description: >-
+      If this build is from a fork, stop executing the current job and return success.
+      This is useful to avoid steps that will fail due to missing credentials.
+    steps:
+      - run:
+          name: Early return if this build is from a forked PR
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+
+              echo "We won't build from PRs. Exiting"
+              circleci step halt
+            fi
+
+jobs:
+  plan:
+    environment:
+      - TF_VAR_aws_region: eu-west-1
+      - tfstatebucket: circlecitfstate
+      - tfstatedir: circledeployments
+      - tfstateregion: us-east-2
+    steps:
+      - checkout
+      - run:
+          name: terraform syntax validation
+          command: terraform validate -check-variables=false
+      - early_return_for_forked_pull_requests
+      - run:
+          name: Make backend for statefile
+          command: |
+            cat \<<EOF > backend_override.tf
+              terraform {
+                backend "azurerm" {
+                    storage_account_name = "${BACKEND_SA}"
+                    container_name       = "${BACKEND_CN}"
+                    key                  = "${BACKEND_SF}"
+                }
+              }
+            EOF
+      - run: echo terraform init
+      - run:
+          name: terraform plan
+          command: |
+            set +eo pipefail
+            terraform plan -detailed-exitcode -out=mybuild
+            retval=$?
+            if [[ $retval -eq 0 ]]; then
+              echo "Terraform found no configuration difference. Exiting"
+              circleci step halt
+            elif [[ $retval -eq 1 ]]; then
+              echo "There was an error with the configuration. Exiting"
+              exit 1
+            elif [[ $retval -eq 2 ]]; then
+              echo "Terraform found changes. Send for approval."
+            else
+              echo "Unknown exit code $retval"
+              exit $retval
+            fi
+      - persist_to_workspace:
+          root: .
+          paths:
+            - mybuild
+
+  build:
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Make backend for statefile
+          command: |
+            cat \<<EOF > backend_override.tf
+              terraform {
+                backend "azurerm" {
+                    storage_account_name = "${BACKEND_SA}"
+                    container_name       = "${BACKEND_CN}"
+                    key                  = "${BACKEND_SF}"
+                }
+              }
+            EOF
+      - run: echo terraform init
+      - run:
+          name: terraform apply
+          command: terraform apply "/tmp/workspace/mybuild" -no-color
+
+workflows:
+  workflow:
+    jobs:
+      - plan
+      - hold:
+          type: approval
+          requires:
+            - plan
+      - build:
+          requires:
+            - hold
