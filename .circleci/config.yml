@@ -17,7 +17,8 @@
 # TF_VAR_aadClientSecret - Service Principal for Kubernetes Azure Cloud Provider
 # TF_VAR_ssh_public_key  - The public key corresponding to the private key held by CircleCI
 #                           More info here: https://circleci.com/docs/2.0/add-ssh-key/
-#
+# SL_API_KEY
+# SL_USERNAME
 version: 2.1
 executors:
   terraform:
@@ -62,9 +63,6 @@ jobs:
     executor: terraform
     environment:
       - TF_VAR_aws_region: eu-west-1
-      - tfstatebucket: circlecitfstate
-      - tfstatedir: circledeployments
-      - tfstateregion: us-east-2
     steps:
       - checkout
       - get_ibmcloud_tf_provider
