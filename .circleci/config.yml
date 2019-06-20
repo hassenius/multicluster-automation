@@ -42,20 +42,20 @@ commands:
               echo "We won't build from PRs. Exiting"
               circleci step halt
             fi
-    get_ibmcloud_tf_provider:
-      description: Download and install the IBM Cloud Terraform Provider
-      steps:
-        - run:
-            name: Download IBM Cloud Provider
-            command: |
-              wget https://github.com/IBM-Cloud/terraform-provider-ibm/releases/download/v0.17.1/linux_amd64.zip
-              mkdir -p  ~/terraform.d/plugins
-              unzip linux_amd64.zip -d  ~/terraform.d/plugins
-              echo \<<EOF >~/.terraformrc
-                providers {
-                  ibm = "/root/terraform.d/plugins/terraform-provider-ibm_v0.17.1"
-                }
-              EOF
+  get_ibmcloud_tf_provider:
+    description: Download and install the IBM Cloud Terraform Provider
+    steps:
+      - run:
+          name: Download IBM Cloud Provider
+          command: |
+            wget https://github.com/IBM-Cloud/terraform-provider-ibm/releases/download/v0.17.1/linux_amd64.zip
+            mkdir -p  ~/terraform.d/plugins
+            unzip linux_amd64.zip -d  ~/terraform.d/plugins
+            echo \<<EOF >~/.terraformrc
+              providers {
+                ibm = "/root/terraform.d/plugins/terraform-provider-ibm_v0.17.1"
+              }
+            EOF
 
 jobs:
   plan:
