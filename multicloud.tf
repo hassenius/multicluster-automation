@@ -15,9 +15,9 @@ variable "aadClientSecret" {
 # problematic when keeping providers inside module configuration block. If the provider is only
 # specified inside the module block, removing the block will prevent the removal of those
 # resources as there is no longer a provider available to destroy the resources
+# https://www.terraform.io/docs/configuration-0-11/modules.html#passing-providers-explicitly
 
 provider "aws" {
-  alias = "awsclusters"
   region = "eu-west-1"
 }
 
@@ -151,12 +151,11 @@ module "azurecloud" {
 
 
 module "awscloud" {
-  source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git?ref=v1.2"
+  source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git?ref=v1.3"
 
   providers = {
-    "aws" = "aws.awsclusters"
+    aws = "aws"
   }
-
   aws_region = "eu-west-1"
 
   ami = "ami-0cbf7a0c36bde57c9"
