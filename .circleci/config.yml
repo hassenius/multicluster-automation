@@ -129,11 +129,16 @@ jobs:
       - run:
           name: terraform apply
           command: terraform apply "/tmp/workspace/mybuild" -no-color
+orbs:
+  slack: circleci/slack@3.2.0
 
 workflows:
   workflow:
     jobs:
       - plan
+      - slack/approval-notification:
+          requires:
+            - plan
       - hold:
           type: approval
           requires:
