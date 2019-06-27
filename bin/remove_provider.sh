@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 ###########################################
 # Because we're consuming templates that
 # were designed to be root templates
