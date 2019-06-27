@@ -22,7 +22,7 @@ if [[ -z ${tmplroot} ]]; then
   echo "Could not find template root for ${tmpl}"
 else
   # Find filename that has provider declaration
-  providerfile=$(grep -l -d skip -E "^provider" ${tmplroot}/*.tf)
+  providerfile=$(grep -l -E "^provider" ${tmplroot}/*.tf)
 fi
 
 # If file is found patch to remove the provider declaration
