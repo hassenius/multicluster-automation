@@ -29,7 +29,7 @@ fi
 if [[ ! -z ${providerfile} ]]; then
   echo "Found provider declaration in ${providerfile}"
   # If this is a single file declaration, the provider can be overwritten by root
-  grep  -d skip -E "^provider.*}" ${providerfile} && {
+  grep -E "^provider.*}" ${providerfile} && {
     echo "${tmpl} has placeholder declaration. No need to modify"
   } || {
     sed -i.bak '/^provider /,/^}/s/^/#/' "${providerfile}"
