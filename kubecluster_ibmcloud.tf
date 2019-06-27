@@ -19,7 +19,7 @@ module "ibmcloud" {
   sl_username = "dummy_value" # We override this with root provider
   sl_api_key  = "dummy_value" # We override this with root provider
 
-  icp_inception_image = "3.1.2"
+  icp_inception_image = "3.2.0"
   deployment = "srerefarchimp"
   key_name = ["hk_key"]
   datacenter = "lon06"
