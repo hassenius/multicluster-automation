@@ -84,6 +84,14 @@ jobs:
             EOF
       - run: terraform init
       - run:
+          name: remove explicit module providers
+          command: |
+            set +eo pipefail
+            echo "Removing provider declarations from templates used as modules"
+            for provider in ibmcloud azure aws; do
+              bin/remove_provider.sh $provider
+            done
+      - run:
           name: terraform plan
           command: |
             set +eo pipefail

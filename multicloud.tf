@@ -28,6 +28,9 @@ provider "ibm" {
   softlayer_api_key = "${var.sl_apikey}"
 }
 
+provider "azurerm" {
+  alias = "azureclusters"
+}
 
 module "ibmcloud" {
   source = "git::https://github.com/ibm-cloud-architecture/terraform-icp-ibmcloud.git//templates/icp-ce-with-loadbalancers?ref=v1"
@@ -81,6 +84,11 @@ module "ibmcloud" {
 
 module "azurecloud" {
   source = "github.com/ibm-cloud-architecture/terraform-icp-azure.git//templates/icp-ce?ref=v1"
+
+  providers = {
+    azurerm = "azurerm.azureclusters"
+  }
+  
   ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAmGOJtZF5FYrpmEBI9GBcbcr4577pZ90lLxZ7tpvfbPmgXQVGoolChAY165frlotd+o7WORtjPiUlRnr/+676xeYCZngLh46EJislXXvcmZrIn3eeQTRdOlIkiP3V4+LiR9WvpyvmMY9jJ05sTGgk39h9LKhBs+XgU7eZMXGYNU7jDiCZssslTvV1i7SensNqy5bziQbhFKsC7TFRld9leYPgCPtoiSeFIWoXSFbQQ0Lh1ayPpOPb0C2k4tYgDFNr927cObtShUOY1dGGBZygUVKQRro1LZzq39DhmvmMCawCnnQt6A8jz4PE69jP62gnlBsdXQDvEm/L/LBrO4CBbQ== hansmoen@oc3254063580.ibm.com"
   icp_version = "3.1.2"
 
