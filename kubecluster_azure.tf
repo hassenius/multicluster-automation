@@ -1,7 +1,4 @@
-variable "sl_apikey" {
-  description = "Username for API Access to IBM Cloud"
-}
-
+### Variables for the module/template
 variable "aadClientId" {
   description = "Auth information for azure cloud controller manager"
 }
@@ -17,78 +14,20 @@ variable "aadClientSecret" {
 # resources as there is no longer a provider available to destroy the resources
 # https://www.terraform.io/docs/configuration-0-11/modules.html#passing-providers-explicitly
 
-provider "aws" {
-  region = "eu-west-1"
-}
-
-
-provider "ibm" {
-  alias = "ibmcloudclusters"
-  softlayer_username = "hans.moen.case"
-  softlayer_api_key = "${var.sl_apikey}"
-}
 
 provider "azurerm" {
   alias = "azureclusters"
 }
 
-module "ibmcloud" {
-  source = "git::https://github.com/ibm-cloud-architecture/terraform-icp-ibmcloud.git//templates/icp-ce-with-loadbalancers?ref=v1"
-  providers = {
-    ibm = "ibm.ibmcloudclusters"
-  }
-  sl_username = "hans.moen.case"
-  sl_api_key = "${var.sl_apikey}"
-  icp_inception_image = "3.1.2"
-  deployment = "srerefarchimp"
-  key_name = ["hk_key"]
-  datacenter = "lon06"
 
-  worker = {
-    nodes = "4"
-    cpu_cores   = "4"
-    memory      = "4096"
-
-    disk_size         = "100" // GB
-    docker_vol_size   = "100" // GB
-    local_disk  = false
-
-    network_speed= "1000"
-
-    hourly_billing = true
-  }
-
-  boot = {
-    # This will also act as the VPN Gateway after creation
-    nodes = "1"
-    cpu_cores         = "2"
-    memory            = "4096"
-
-    disk_size         = "100" // GB
-    docker_vol_size   = "100" // GB
-    local_disk        = true
-    os_reference_code = "UBUNTU_16_64"
-
-    network_speed     = "1000"
-
-    hourly_billing = true
-
-  }
-
-  network_cidr = "172.21.128.0/17"
-
-
-  service_network_cidr  = "172.21.127.0/24"
-
-}
-
+### Module / Template configuration
 module "azurecloud" {
   source = "github.com/ibm-cloud-architecture/terraform-icp-azure.git//templates/icp-ce?ref=v1"
 
   providers = {
     azurerm = "azurerm.azureclusters"
   }
-  
+
   ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAmGOJtZF5FYrpmEBI9GBcbcr4577pZ90lLxZ7tpvfbPmgXQVGoolChAY165frlotd+o7WORtjPiUlRnr/+676xeYCZngLh46EJislXXvcmZrIn3eeQTRdOlIkiP3V4+LiR9WvpyvmMY9jJ05sTGgk39h9LKhBs+XgU7eZMXGYNU7jDiCZssslTvV1i7SensNqy5bziQbhFKsC7TFRld9leYPgCPtoiSeFIWoXSFbQQ0Lh1ayPpOPb0C2k4tYgDFNr927cObtShUOY1dGGBZygUVKQRro1LZzq39DhmvmMCawCnnQt6A8jz4PE69jP62gnlBsdXQDvEm/L/LBrO4CBbQ== hansmoen@oc3254063580.ibm.com"
   icp_version = "3.1.2"
 
@@ -158,76 +97,31 @@ module "azurecloud" {
 }
 
 
-module "awscloud" {
-  source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git?ref=v1.3"
-
-  providers = {
-    aws = "aws"
-  }
-  aws_region = "eu-west-1"
-
-  ami = "ami-0cbf7a0c36bde57c9"
-
-  bastion = {
-    nodes = "1"
-    type      = "t2.micro"
-    ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
-    disk      = "10" //GB
-  }
-
-  master = {
-    nodes = "1"
-    type      = "m4.2xlarge"
-    ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
-    disk      = "300" //GB
-    docker_vol = "100" // GB
-    ebs_optimized = true    // not all instance types support EBS optimized
-  }
-
-  proxy = {
-    nodes     = "1"
-    type      = "m4.xlarge"
-    ami       = "ami-0cbf7a0c36bde57c9" // Leave blank to let terraform search for Ubuntu 16.04 ami. NOT RECOMMENDED FOR PRODUCTION
-    disk      = "150" //GB
-    docker_vol = "100" // GB
-    ebs_optimized = true    // not all instance types support EBS optimized
-  }
-
-  key_name = "hk_key"
-
-  icp_inception_image = "ibmcom/icp-inception-amd64:3.2.0"
-
-  icp_network_cidr = "172.23.0.0/17"
-
-  icp_service_network_cidr = "172.23.128.0/17"
-
-}
-
 
 ## IBM Cloud Environment
-output "ibmcloud_icp_console_host" {
-  value = "${module.ibmcloud.icp_console_host}"
-}
-
-output "ibmcloud_icp_proxy_host" {
-  value = "${module.ibmcloud.icp_proxy_host}"
-}
-
-output "ibmcloud_icp_console_url" {
-  value = "${module.ibmcloud.icp_console_url}"
-}
-
-output "ibmcloud_icp_registry_url" {
-  value = "${module.ibmcloud.icp_registry_url}"
-}
-
-output "ibmcloud_kubernetes_api_url" {
-  value = "${module.ibmcloud.kubernetes_api_url}"
-}
-
-output "ibmcloud_icp_admin_username" {
-  value = "admin"
-}
+# output "ibmcloud_icp_console_host" {
+#   value = "${module.ibmcloud.icp_console_host}"
+# }
+#
+# output "ibmcloud_icp_proxy_host" {
+#   value = "${module.ibmcloud.icp_proxy_host}"
+# }
+#
+# output "ibmcloud_icp_console_url" {
+#   value = "${module.ibmcloud.icp_console_url}"
+# }
+#
+# output "ibmcloud_icp_registry_url" {
+#   value = "${module.ibmcloud.icp_registry_url}"
+# }
+#
+# output "ibmcloud_kubernetes_api_url" {
+#   value = "${module.ibmcloud.kubernetes_api_url}"
+# }
+#
+# output "ibmcloud_icp_admin_username" {
+#   value = "admin"
+# }
 
 ## We will not output the passwords since
 ## we do our builds in public
