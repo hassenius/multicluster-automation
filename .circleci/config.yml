@@ -65,6 +65,8 @@ commands:
           name: remove explicit module providers
           command: |
             set +eo pipefail
+            # We also need jq for this
+            apk add -q jq 
             echo "Removing provider declarations from templates used as modules"
             for provider in ibmcloud azure aws; do
               bin/remove_provider.sh $provider
