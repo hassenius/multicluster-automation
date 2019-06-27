@@ -57,6 +57,18 @@ commands:
                 ibm = "/root/terraform.d/plugins/terraform-provider-ibm_v0.17.1"
               }
             EOF
+  tf_init:
+    description: Initialize terraform and perform necessary modifications
+    steps:
+      - run: terraform init
+      - run:
+          name: remove explicit module providers
+          command: |
+            set +eo pipefail
+            echo "Removing provider declarations from templates used as modules"
+            for provider in ibmcloud azure aws; do
+              bin/remove_provider.sh $provider
+            done
 
 jobs:
   plan:
@@ -82,15 +94,7 @@ jobs:
                 }
               }
             EOF
-      - run: terraform init
-      - run:
-          name: remove explicit module providers
-          command: |
-            set +eo pipefail
-            echo "Removing provider declarations from templates used as modules"
-            for provider in ibmcloud azure aws; do
-              bin/remove_provider.sh $provider
-            done
+      - tf_init
       - run:
           name: terraform plan
           command: |
@@ -133,7 +137,7 @@ jobs:
                 }
               }
             EOF
-      - run: terraform init
+      - tf_init
       - run:
           name: terraform apply
           command: terraform apply "/tmp/workspace/mybuild" -no-color
