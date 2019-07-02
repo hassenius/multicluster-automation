@@ -44,6 +44,15 @@ module "awscloud" {
     docker_vol = "100" // GB
     ebs_optimized = true    // not all instance types support EBS optimized
   }
+  
+  worker = {
+    nodes     = "6"
+    type      = "m4.2xlarge"
+    ami       = "" // Insert your own ami. Leave blank to use main var.ami
+    disk      = "150" //GB
+    docker_vol = "100" // GB
+    ebs_optimized = true    // not all instance types support EBS optimized
+  }
 
   key_name = "hk_key"
 
@@ -56,3 +65,33 @@ module "awscloud" {
 }
 
 ### Outputs
+output "awscloud_icp_console_host" {
+  value = "${module.awscloud.icp_concole_host}" # Typo! ;-(
+}
+
+output "awscloud_icp_proxy_host" {
+  value = "${module.awscloud.icp_proxy_host}"
+}
+
+output "awscloud_icp_console_url" {
+  value = "${module.awscloud.icp_console_url}"
+}
+
+output "awscloud_icp_registry_url" {
+  value = "${module.awscloud.icp_registry_url}"
+}
+
+output "awscloud_kubernetes_api_url" {
+  value = "${module.awscloud.icp_kubernetes_api_url}"
+}
+
+output "awscloud_icp_admin_username" {
+  value = "admin"
+}
+
+## We will not output the passwords since
+## we do our builds in public
+##
+# output "awscloud_icp_admin_password" {
+#   value = "${module.awscloud.icp_admin_password}"
+# }
