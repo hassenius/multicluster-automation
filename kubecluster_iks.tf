@@ -13,11 +13,10 @@ resource "ibm_container_cluster" "iks_refarch_cluster" {
   name            = "sre_refarch"
   datacenter      = "lon06"
   kube_version    = "3.11.104_openshift"
-  machine_type    = "u3c.2x4"
+  machine_type    = "b3c.4x16"
   hardware        = "shared"
   public_vlan_id  = "${var.iks_public_vlan}"
   private_vlan_id = "${var.iks_private_vlan}"
-  #subnet_id       = ["1154643"]
   region          = "${var.iks_region}"
   resource_group_id = "${data.ibm_resource_group.refarch.id}"
 
