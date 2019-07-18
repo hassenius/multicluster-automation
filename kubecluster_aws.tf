@@ -11,7 +11,9 @@ provider "aws" {
 
 ### Module / Template configuration
 module "awscloud" {
-  source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git?ref=v1.3"
+  #source = "github.com/ibm-cloud-architecture/terraform-icp-aws.git?ref=v1.3"
+  # Use fork while upstream is being fixed
+  source = "github.com/hassenius/terraform-icp-aws.git?ref=lifecycle"
 
   providers = {
     aws = "aws"
@@ -44,11 +46,11 @@ module "awscloud" {
     docker_vol = "100" // GB
     ebs_optimized = true    // not all instance types support EBS optimized
   }
-  
+
   worker = {
     nodes     = "6"
     type      = "m4.2xlarge"
-    ami       = "" // Insert your own ami. Leave blank to use main var.ami
+    ami       = "ami-0cbf7a0c36bde57c9"
     disk      = "150" //GB
     docker_vol = "100" // GB
     ebs_optimized = true    // not all instance types support EBS optimized
