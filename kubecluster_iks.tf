@@ -30,12 +30,43 @@ resource "ibm_container_cluster" "iks_refarch_cluster" {
 
 }
 
-data "ibm_container_cluster_config" "refarch_ds_cluster" {
-  cluster_name_id = "${ibm_container_cluster.iks_refarch_cluster.id}"
-  resource_group_id = "${data.ibm_resource_group.refarch.id}"
-  region          = "${var.iks_region}"
+### This doesn't work at the moment.
+# See https://github.com/IBM-Cloud/terraform-provider-ibm/issues/656
+# data "ibm_container_cluster_config" "refarch_ds_cluster" {
+#   cluster_name_id = "${ibm_container_cluster.iks_refarch_cluster.id}"
+#   resource_group_id = "${data.ibm_resource_group.refarch.id}"
+#   region          = "${var.iks_region}"
+# }
+
+## Use this as a workaround
+## Pass server_url as query string and
+## pickup IC_API_KEY from environment variable
+data "external" "iks_token" {
+  program = ["sh", "${path.module}/bin/get_iks_openshift_token.sh"]
+
+  query = {
+    server_url = "${ibm_container_cluster.iks_refarch_cluster.server_url}"
+  }
 }
 
 provider "kubernetes" {
-  config_path = "${data.ibm_container_cluster_config.refarch_ds_cluster.config_file_path}"
+  host      = "${ibm_container_cluster.iks_refarch_cluster.server_url}"
+  token    = "${data.external.iks_token.result.token}"
+  alias     = "ikskube"
+}
+
+resource "kubernetes_namespace" "example" {
+  provider = "kubernetes.ikskube"
+
+  metadata {
+    annotations {
+      name = "example-annotation"
+    }
+
+    labels {
+      mylabel = "label-value"
+    }
+
+    name = "my-terraform-ns"
+  }
 }
