@@ -28,6 +28,12 @@ resource "ibm_container_cluster" "iks_refarch_cluster" {
     url = "${var.iks_slack_webhook}"
   }]
 
+  # While openshift is added properly to iks we need to ignore the version
+  ## see https://github.com/IBM-Cloud/terraform-provider-ibm/issues/647
+  lifecycle {
+    ignore_changes = ["kube_version"]
+  }
+
 }
 
 ### This doesn't work at the moment.
