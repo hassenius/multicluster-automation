@@ -16,7 +16,7 @@ function parse_input() {
 }
 
 function return_token() {
-  TOKEN=$(curl -v -u apikey:${IC_API_KEY} "https://${SERVER_URL}/oauth/authorize?client_id=openshift-challenging-client&response_type=token" \
+  TOKEN=$(curl -v -u apikey:${IC_API_KEY} "${SERVER_URL}/oauth/authorize?client_id=openshift-challenging-client&response_type=token" \
     -skv -H "X-CSRF-Token: xxx" --stderr - |  grep location: | sed -E 's/(.*)(access_token=)([^&]*)(&.*)/\3/')
   jq -n \
     --arg token "$TOKEN" \
